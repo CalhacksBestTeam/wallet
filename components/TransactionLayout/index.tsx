@@ -121,25 +121,25 @@ const TransactionModal = (): ReactElement => {
   return (
     <>
       <CheckContainer>
-        <CheckImage src="/check.jpeg" alt="Check" />
         <CheckFrom>{`FROM: ${account?.publicKey}`}</CheckFrom>
 
-        {transactionSig && (
-          <Processed
-            href={`https://explorer.solana.com/tx/${transactionSig}?cluster=devnet`}
-            target="_blank"
-          >
-            Processed - Review on Solana Block Explorer
-          </Processed>
-        )}
+        <div>
+          {transactionSig && (
+              <Processed
+                  href={`https://explorer.solana.com/tx/${transactionSig}?cluster=devnet`}
+                  target="_blank"
+              >
+                Processed - Review on Solana Block Explorer
+              </Processed>
+          )}
 
-        <CheckDate>
-          {new Date().toString().split(" ").slice(1, 4).join(" ")}
-        </CheckDate>
-        <RecipientInput
-          value={form.to}
-          onChange={(e) => onFieldChange("to", e.target.value)}
-        />
+          <RecipientInput
+              value={form.to}
+              onChange={(e) => onFieldChange("to", e.target.value)}
+          />
+
+        </div>
+
         <AmountInput
           value={form.amount}
           onChange={(e) => onFieldChange("amount", e.target.value)}

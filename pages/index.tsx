@@ -1,17 +1,44 @@
-import React from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import type { NextPage } from "next";
 import Head from "next/head";
 import CreateAccount from "../components/CreateAccount";
 import RestoreAccount from "../components/RestoreAccount";
 import styled from "styled-components";
+const { io } = require("socket.io-client");
 
 const Home: NextPage = () => {
-  return (
+
+    useEffect(() => {
+      fetch('/api/socket').finally(() => {
+        const socket = io()
+
+        socket.on('connect', () => {
+          console.log('connect')
+          socket.emit('hello')
+
+          socket.on('createTransaction', (data : any) => {
+            console.log('hello', data)
+          })
+
+          socket.on('a user connected', () => {
+            console.log('a user connected')
+          })
+
+          socket.emit("test", {data: "test"})
+
+          socket.on('disconnect', () => {
+            console.log('disconnect')
+          })
+        })
+      })
+    }, []) // Added [] as useEffect filter so it will be executed only once, when component
+
+    return (
     <>
       <Head>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
         <meta charSet="utf-8" />
-        <title>Wallet Tutorial</title>
+        <title>{process.env.NEXT_PUBLIC_BRAND_NAME} wallet</title>
         <meta name="description" content="Web3 tutorial for Solana crypto wallet." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
