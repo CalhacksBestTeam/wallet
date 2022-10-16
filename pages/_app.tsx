@@ -14,10 +14,11 @@ function MyApp({ Component, pageProps }: AppProps) {
   const [mnemonic, setMnemonic] = useState<string | null>(null);
   const [balance, setBalance] = useState<number | null>(null);
 
-  return (
+    return (
     <GlobalContext.Provider value={{ network, setNetwork, account, setAccount, mnemonic, setMnemonic, balance, setBalance }}>
       <Layout>
-        <Component {...pageProps} />
+          {/* @ts-ignore */}
+          <Component {...pageProps} />
       </Layout>
     </GlobalContext.Provider>
   )
