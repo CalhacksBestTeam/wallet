@@ -7,33 +7,12 @@ import MakePayment from "../components/MakePayment";
 import TerminalStatus from "../components/TerminalStatus";
 import styled from "styled-components";
 const { io } = require("socket.io-client");
+let socket
 
 const Home: NextPage = () => {
+  useEffect(() => {
 
-    useEffect(() => {
-      fetch('/api/socket').finally(() => {
-        const socket = io()
-
-        socket.on('connect', () => {
-          console.log('connect')
-          socket.emit('hello')
-
-          socket.on('createTransaction', (data : any) => {
-            console.log('hello', data)
-          })
-
-          socket.on('a user connected', () => {
-            console.log('a user connected')
-          })
-
-          socket.emit("test", {data: "test"})
-
-          socket.on('disconnect', () => {
-            console.log('disconnect')
-          })
-        })
-      })
-    }, []) // Added [] as useEffect filter so it will be executed only once, when component
+  }, [])
 
     return (
     <>
