@@ -117,14 +117,6 @@ const Layout = ({ children }: { children: JSX.Element }): ReactElement => {
 
         <Divider style={{ marginTop: "3rem" }} />
 
-        <footer className={styles.footerHome}>
-          <p>
-            MyWallet tutorial created by{" "}
-            <a className={styles.footerLink} href="https://learn.figment.io/">
-              Figment Learn
-            </a>
-          </p>
-        </footer>
       </main>
     </div>
   );
