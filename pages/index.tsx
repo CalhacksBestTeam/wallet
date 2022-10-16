@@ -4,22 +4,41 @@ import Head from "next/head";
 import MakePayment from "../components/MakePayment";
 import TerminalStatus from "../components/TerminalStatus";
 import styled from "styled-components";
+import {Button, Form, Modal} from "react-bootstrap";
+import PinScreen from "../components/pin-screen/PinScreen";
+import {LoadingOutlined} from "@ant-design/icons";
 import {useRouter} from "next/router";
 
-const {io} = require("socket.io-client");
-let socket
-
 const Home: NextPage = () => {
+    const [show, setShow] = React.useState(false);
     const router = useRouter();
 
-    setInterval(async () => {
-        const res = await fetch("https://wallet-hazel.vercel.app/api/createTransaction")
-        const after = await res;
-        const json = await after.json();
-        console.log(json);
-        if (!json) return;
-        router.push("/generate");
-    }, 4000)
+    const MyVerticallyCenteredModal = (props: any) => {
+        return (
+            <Modal
+                {...props}
+                size="lg"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+                animation={false}
+            >
+                <Modal.Body>
+                    <p className="text-center">Enter destination address</p>
+                    <Form>
+                        <Form.Group className="mb-3" controlId="formBasicEmail">
+                            <Form.Label>Recipients Address</Form.Label>
+                            <Form.Control type="email" placeholder="Enter Wallet Address" />
+                        </Form.Group>
+                        <Button variant="primary" type="submit" onClick={() => {router.push("/generate")}}>
+                            Submit
+                        </Button>
+                    </Form>
+                </Modal.Body>
+            </Modal>
+        );
+    }
+
+
 
     return (
         <>
@@ -35,8 +54,11 @@ const Home: NextPage = () => {
                 <a href="https://solana.com/">Solana</a> digital assets.
             </HomeTitle>
 
+            <MyVerticallyCenteredModal
+                show={show}
+            />
             <HomeGrid>
-                <MakePayment/>
+                <MakePayment setShow={setShow}/>
                 <TerminalStatus/>
             </HomeGrid>
         </>

@@ -16,7 +16,6 @@ const Phrase: NextPage = () => {
     const data = useRef()
     const [dataLive, setDataLive] = useState();
     const [pinNum, setPinNum] = useState<string | undefined>(undefined);
-
     const globalState = useGlobalState();
 
 
@@ -83,6 +82,7 @@ const Phrase: NextPage = () => {
                 size="lg"
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
+                animation={false}
             >
                 {!transferFinished ? <Modal.Body>
                     <p className={"text-center"}>

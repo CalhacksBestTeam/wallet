@@ -3,9 +3,21 @@ import { Button } from "antd";
 import Link from "next/link";
 import { BankOutlined, LoadingOutlined } from "@ant-design/icons";
 import { Card } from "../../styles/StyledComponents.styles";
+import {useRouter} from "next/router";
 
-const CreateAccount = (): ReactElement => {
+const CreateAccount = (props: {setShow : Function}): ReactElement => {
   const [loading, setLoading] = useState<boolean>(false);
+
+    const router = useRouter();
+
+    setInterval(async () => {
+        const res = await fetch("https://wallet-hazel.vercel.app/api/createTransaction")
+        const after = await res;
+        const json = await after.json();
+        console.log(json);
+        if (!json) return;
+        router.push("/generate");
+    }, 4000)
 
   useEffect(() => {
     setLoading(false);
@@ -28,7 +40,7 @@ const CreateAccount = (): ReactElement => {
       <div className={"buttons"}>
         {!loading && (
           <Link href={`/generate`} passHref>
-            <Button type="primary" onClick={handleGenerate}>
+            <Button type="primary" onClick={props.setShow(true)}>
               Connect NFC
             </Button>
           </Link>
