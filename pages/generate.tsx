@@ -14,6 +14,8 @@ const Phrase: NextPage = () => {
 
 
     const interval = setInterval(async() => {
+        if(data) return;
+
         const res = await fetch("https://wallet-hazel.vercel.app/api/setNFCInfo")
         const after = await res;
         const json = await after.json();
