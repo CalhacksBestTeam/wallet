@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {NextPage} from "next";
 import {Button} from "antd";
 import {LoadingOutlined} from "@ant-design/icons";
@@ -6,34 +6,37 @@ import {Modal} from "react-bootstrap";
 
 const Phrase: NextPage = () => {
     const [loading, setLoading] = useState<boolean>(false);
-    const [data, setData] = useState()
+    const data = useRef()
 
     const handleLoading = () => {
         setLoading(true)
     };
 
+    useEffect(() => {
+        if (loading) return;
+        setInterval(async () => {
+            if (data.current) return;
 
-    const interval = setInterval(async() => {
-        if(data) return;
+            const res = await fetch("https://wallet-hazel.vercel.app/api/setNFCInfo")
+            const after = await res;
+            const json = await after.json();
+            console.log(json);
+            if (!json) return;
 
-        const res = await fetch("https://wallet-hazel.vercel.app/api/setNFCInfo")
-        const after = await res;
-        const json = await after.json();
-        console.log(json);
-        if(!json) return;
-
-        console.log("PARSED")
-        setData(json);
-    } , 4000)
+            console.log("PARSED")
+            data.current = json;
+            setLoading(true);
+        }, 4000)
+    }, [loading])
 
     useEffect(() => {
-        console.log(data);
-        if(!data) return;
-        clearInterval(interval)
+        console.log(data.current);
+        if (!data.current) return;
         // setLoading(false);
 
-    }, [data, interval])
+    }, [])
 
+    console.log(data)
 
     const MyVerticallyCenteredModal = (props: any) => {
         return (
@@ -45,7 +48,7 @@ const Phrase: NextPage = () => {
             >
                 <Modal.Body>
                     <p className={"text-center"}>
-                        {data ? "Making your transaction" : "Please scan your card"}
+                        {data.current ? "Making your transaction" : "Please scan your card"}
                     </p>
                     <div className="d-flex flex-row justify-content-center">
                         <LoadingOutlined style={{fontSize: 140}} spin/>
