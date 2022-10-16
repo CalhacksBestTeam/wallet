@@ -1,33 +1,54 @@
-import React, { useState } from "react";
-import { NextPage } from "next";
-import { Button } from "antd";
-import Link from "next/link";
-import { LoadingOutlined } from "@ant-design/icons";
+import React, {useState} from "react";
+import {NextPage} from "next";
+import {Button} from "antd";
+import {LoadingOutlined} from "@ant-design/icons";
+import {Modal} from "react-bootstrap";
 
 const Phrase: NextPage = () => {
-  const [loading, setLoading] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
 
-  const handleLoading = () => {
-    setLoading(true)
-  };
+    const handleLoading = () => {
+        setLoading(true)
+    };
 
-  return (
-    <>
-      <h1 className={"title"}>Create New Wallet</h1>
+    function MyVerticallyCenteredModal(props: any) {
+        return (
+            <Modal
+                {...props}
+                size="lg"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+            >
+                <Modal.Body>
+                    <p className={"text-center"}>
+                        Please scan your card
+                    </p>
+                    <div className="d-flex flex-row justify-content-center">
+                        <LoadingOutlined style={{fontSize: 140}} spin/>
+                    </div>
 
-      <p>Generate a key phrase to set up your Solana wallet.</p>
+                </Modal.Body>
+            </Modal>
+        );
+    }
 
-      {!loading && (
-        <Link href={`/phrase`} passHref>
-          <Button type="default" onClick={handleLoading}>
-            Generate
-          </Button>
-        </Link>
-      )}
+    return (
+        <>
+            <h1 className={"title"}>Connect Reader</h1>
 
-      {loading && <LoadingOutlined style={{ fontSize: 24 }} spin />}
-    </>
-  );
+            <p>Use our app to scan your wallet.</p>
+            <MyVerticallyCenteredModal
+                show={loading}
+            />
+            {!loading && (
+                <Button type="default" onClick={handleLoading}>
+                    Scan NFC
+                </Button>
+            )}
+
+            {loading && <LoadingOutlined style={{fontSize: 24}} spin/>}
+        </>
+    );
 };
 
 export default Phrase;

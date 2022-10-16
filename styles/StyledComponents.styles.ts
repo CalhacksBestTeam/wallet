@@ -99,13 +99,11 @@ export const CheckImage = styled.img`
 `;
 
 export const CheckFrom = styled.p`
-  position: absolute;
   top: 11%;
   left: 3.6%;
 `;
 
 export const Processed = styled.a`
-  position: absolute;
   top: 20%;
   left: 3.6%;
   font-style: italic;
@@ -113,13 +111,11 @@ export const Processed = styled.a`
 `;
 
 export const CheckDate = styled.p`
-  position: absolute;
   top: 19%;
   left: 68%;
 `;
 
 export const RecipientInput = styled(Input)`
-  position: absolute;
   top: 35%;
   left: 17%;
   height: 9%;
@@ -127,7 +123,6 @@ export const RecipientInput = styled(Input)`
 `;
 
 export const AmountInput = styled(Input)`
-  position: absolute;
   top: 35%;
   left: 76%;
   height: 9%;
@@ -135,7 +130,6 @@ export const AmountInput = styled(Input)`
 `;
 
 export const SignatureInput = styled(Button)`
-  position: absolute;
   top: 69%;
   left: 59%;
   height: 9%;
@@ -143,13 +137,11 @@ export const SignatureInput = styled(Button)`
 `;
 
 export const AmountText = styled.p`
-  position: absolute;
   top: 52%;
   left: 5%;
 `;
 
 export const RatioText = styled.p`
-  position: absolute;
   top: 71%;
   left: 11%;
 `;
