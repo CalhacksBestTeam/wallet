@@ -1,4 +1,5 @@
 import React, { useState, useEffect, ReactElement } from "react";
+// @ts-ignore
 import { Button } from "antd";
 import Link from "next/link";
 import { BankOutlined, LoadingOutlined } from "@ant-design/icons";

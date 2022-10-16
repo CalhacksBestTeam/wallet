@@ -1,0 +1,25 @@
+.pinDiv {
+    width: 400px;
+    height: 600px;
+}
+
+.input {
+    border-radius: 3px;
+    box-shadow: none;
+    border: 1px solid black;
+    background: white;
+    color: black;
+    font-weight: bold;
+    font-size: 40px;
+}
+
+.pinButton {
+    height: 40px;
+    width: 140px;
+    background: white;
+    border: 1px black;
+}
+
+.pinRow {
+    gap: 10px;
+}

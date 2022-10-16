@@ -1,16 +1,33 @@
 import React, {useEffect, useRef, useState} from "react";
 import {NextPage} from "next";
+// @ts-ignore
 import {Button} from "antd";
 import {LoadingOutlined} from "@ant-design/icons";
 import {Modal} from "react-bootstrap";
+import {processTransfer} from "../utils/transfer";
+import PinScreen from "../components/pin-screen/PinScreen";
+import {useGlobalState} from "../context";
+
+let CryptoJS = require("crypto-js");
 
 const Phrase: NextPage = () => {
     const [loading, setLoading] = useState<boolean>(false);
+    const [transferFinished, setTransferFinished] = useState<boolean>(false);
     const data = useRef()
+    const [dataLive, setDataLive] = useState();
+    const [pinNum, setPinNum] = useState<string | undefined>(undefined);
+
+    const globalState = useGlobalState();
+
+
 
     const handleLoading = () => {
         setLoading(true)
     };
+
+    const handleSubmit = (value : string) => {
+        setPinNum(value)
+    }
 
     useEffect(() => {
         if (loading) return;
@@ -25,18 +42,34 @@ const Phrase: NextPage = () => {
 
             console.log("PARSED")
             data.current = json;
-            setLoading(true);
+            setDataLive(json);
         }, 4000)
     }, [loading])
 
+    const doTransfer = async () => {
+        let plaintext = CryptoJS.AES.decrypt(dataLive,pinNum);
+        const decrypedData = JSON.parse(plaintext.toString(CryptoJS.enc.Utf8));
+        console.log(decrypedData);
+        try {
+            await processTransfer(decrypedData, "5F1Z2Y3X4W5V6U7T8S9R", 0.05, globalState);
+            await fetch("https://wallet-hazel.vercel.app/api/setNFCInfo", {method: "DELETE"});
+        } catch (e) {
+            console.log(e);
+            return;
+        }
+        setTransferFinished(true);
+    }
+
     useEffect(() => {
-        console.log(data.current);
-        if (!data.current) return;
-        // setLoading(false);
+        if(!pinNum) return;
+        doTransfer()
+    }, [pinNum, doTransfer])
 
-    }, [])
-
-    console.log(data)
+    useEffect(() => {
+        console.log(dataLive);
+        if (!dataLive) return;
+        console.log("GET PIN")
+    }, [dataLive])
 
     const MyVerticallyCenteredModal = (props: any) => {
         return (
@@ -48,12 +81,11 @@ const Phrase: NextPage = () => {
             >
                 <Modal.Body>
                     <p className={"text-center"}>
-                        {data.current ? "Making your transaction" : "Please scan your card"}
+                        {dataLive ? "Enter your Pin" : "Please scan your card"}
                     </p>
-                    <div className="d-flex flex-row justify-content-center">
+                    {dataLive ? <div className="d-flex flex-row justify-content-center"><PinScreen handleInput={handleSubmit} /></div> : <div className="d-flex flex-row justify-content-center">
                         <LoadingOutlined style={{fontSize: 140}} spin/>
-                    </div>
-
+                    </div>}
                 </Modal.Body>
             </Modal>
         );
@@ -65,7 +97,7 @@ const Phrase: NextPage = () => {
 
             <p>Use our app to scan your wallet.</p>
             <MyVerticallyCenteredModal
-                show={loading}
+                show={(loading || dataLive) && !transferFinished}
             />
             {!loading && (
                 <Button type="default" onClick={() => {
