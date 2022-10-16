@@ -116,6 +116,7 @@ const Layout = ({ children }: { children: JSX.Element }): ReactElement => {
         )}
 
         <Divider style={{ marginTop: "3rem" }} />
+
       </main>
     </div>
   );
