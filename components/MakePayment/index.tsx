@@ -25,6 +25,7 @@ const CreateAccount = (props: {setShow : Function}): ReactElement => {
 
   const handleGenerate = () => {
     setLoading(true);
+    props.setShow(true)
   };
 
   return (
@@ -39,11 +40,9 @@ const CreateAccount = (props: {setShow : Function}): ReactElement => {
 
       <div className={"buttons"}>
         {!loading && (
-          <Link href={`/generate`} passHref>
-            <Button type="primary" onClick={props.setShow(true)}>
+            <Button type="primary" onClick={handleGenerate}>
               Connect NFC
             </Button>
-          </Link>
         )}
         {loading && (
           <Button className={"disabledButton"} disabled>

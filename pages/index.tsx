@@ -28,6 +28,8 @@ const Home: NextPage = () => {
                         <Form.Group className="mb-3" controlId="formBasicEmail">
                             <Form.Label>Recipients Address</Form.Label>
                             <Form.Control type="email" placeholder="Enter Wallet Address" />
+                            <Form.Label>Amount</Form.Label>
+                            <Form.Control type="email" placeholder="Enter Amount" />
                         </Form.Group>
                         <Button variant="primary" type="submit" onClick={() => {router.push("/generate")}}>
                             Submit
