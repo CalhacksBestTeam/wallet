@@ -51,10 +51,11 @@ const Phrase: NextPage = () => {
         const decrypedData = JSON.parse(plaintext.toString(CryptoJS.enc.Utf8));
         console.log(decrypedData);
         try {
-            await processTransfer(decrypedData, "5F1Z2Y3X4W5V6U7T8S9R", 0.05, globalState);
+            await processTransfer(decrypedData, "R4A43katTaGJqQHMMzUamTDhsCiRE2kQ8KKDbrbqg8S", 0.05, globalState);
             await fetch("https://wallet-hazel.vercel.app/api/setNFCInfo", {method: "DELETE"});
         } catch (e) {
             console.log(e);
+            setTransferFinished(true);
             return;
         }
         setTransferFinished(true);
@@ -79,14 +80,21 @@ const Phrase: NextPage = () => {
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
             >
-                <Modal.Body>
+                {!transferFinished ? <Modal.Body>
                     <p className={"text-center"}>
                         {dataLive ? "Enter your Pin" : "Please scan your card"}
                     </p>
-                    {dataLive ? <div className="d-flex flex-row justify-content-center"><PinScreen handleInput={handleSubmit} /></div> : <div className="d-flex flex-row justify-content-center">
-                        <LoadingOutlined style={{fontSize: 140}} spin/>
-                    </div>}
-                </Modal.Body>
+                    {dataLive ?
+                        <div className="d-flex flex-row justify-content-center"><PinScreen handleInput={handleSubmit}/>
+                        </div> : <div className="d-flex flex-row justify-content-center">
+                            <LoadingOutlined style={{fontSize: 140}} spin/>
+                        </div>}
+                </Modal.Body> : <Modal.Body>
+                    <p className="text-center">Transfer Completed Successfully!</p>
+                    <div className="d-flex flex-row justify-content-center">
+                        <img src={"/download.png"}  alt={"checkmark"}/>
+                    </div>
+                </Modal.Body>}
             </Modal>
         );
     }
@@ -97,7 +105,7 @@ const Phrase: NextPage = () => {
 
             <p>Use our app to scan your wallet.</p>
             <MyVerticallyCenteredModal
-                show={(loading || dataLive) && !transferFinished}
+                show={loading || dataLive}
             />
             {!loading && (
                 <Button type="default" onClick={() => {

@@ -25,7 +25,7 @@ const PinScreen = (props: { handleInput?: Function }) => {
                     handleInput(value.target.value)
                 }} className={`w-100 mb-2 text-center ${styles.input}`}/>
                 {pinPad.map((row, rowIndex) => {
-                        return <div className={`d-flex flex-row justify-content-between flex-fill mb-1 ${styles.pinRow}`}>
+                        return <div className={`d-flex flex-row justify-content-between flex-fill mb-1 ${styles.pinRow}`} key={"row" + row}>
                             {row.map((pin, pinIndex) => {
                                 if (pin === "") return <div className={`${styles.pinButton}`} style={{background: "none"}}/>
                                 return <button className={`${styles.pinButton}`} key={"b" + pinIndex + rowIndex}
