@@ -137,14 +137,14 @@ function processTransfer(accountCreds:Keypair, receiver:String,  amount:number )
     
             <RecipientInput
                 value={form.to}
-                onChange={(e) => onFieldChange("to", e.target.value)}
+                //onChange={(e) => onFieldChange("to", e.target.value)}
             />
     
           </div>
             
           <AmountInput
             value={form.amount}
-            onChange={(e) => onFieldChange("amount", e.target.value)}
+            //onChange={(e) => onFieldChange("amount", e.target.value)}
           />
           <AmountText>
             {form.amount <= 0 ? "" : converter.toWords(form.amount)}
@@ -179,4 +179,4 @@ function processTransfer(accountCreds:Keypair, receiver:String,  amount:number )
     );
 };
 
-export default TransactionModal;
+export default Transaction;
