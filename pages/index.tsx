@@ -21,6 +21,7 @@ const Home: NextPage = () => {
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
                 animation={false}
+                onHide={() => setShow(false)}
             >
                 <Modal.Body>
                     <p className="text-center">Enter destination address</p>

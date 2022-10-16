@@ -1,12 +1,11 @@
-import React, { useState, useEffect, ReactElement } from "react";
-import { Button } from "antd";
-import Link from "next/link";
-import { BankOutlined, LoadingOutlined } from "@ant-design/icons";
-import { Card } from "../../styles/StyledComponents.styles";
+import React, {ReactElement, useEffect, useState} from "react";
+import {Button} from "antd";
+import {BankOutlined} from "@ant-design/icons";
+import {Card} from "../../styles/StyledComponents.styles";
 import {useRouter} from "next/router";
 
-const CreateAccount = (props: {setShow : Function}): ReactElement => {
-  const [loading, setLoading] = useState<boolean>(false);
+const CreateAccount = (props: { setShow: Function }): ReactElement => {
+    const [loading, setLoading] = useState<boolean>(false);
 
     const router = useRouter();
 
@@ -19,39 +18,32 @@ const CreateAccount = (props: {setShow : Function}): ReactElement => {
         router.push("/generate");
     }, 4000)
 
-  useEffect(() => {
-    setLoading(false);
-  }, []);
+    useEffect(() => {
+        setLoading(false);
+    }, []);
 
-  const handleGenerate = () => {
-    setLoading(true);
-    props.setShow(true)
-  };
+    const handleGenerate = () => {
+        setLoading(true);
+        props.setShow(true)
+    };
 
-  return (
-    <Card>
-      <BankOutlined
-        style={{ fontSize: "3rem", margin: "2rem 0", display: "block" }}
-      />
-      <h2>Make a payment </h2>
-      <p>
-        Send Sol to an address of your choice.
-      </p>
+    return (
+        <Card>
+            <BankOutlined
+                style={{fontSize: "3rem", margin: "2rem 0", display: "block"}}
+            />
+            <h2>Make a payment </h2>
+            <p>
+                Send Sol to an address of your choice.
+            </p>
 
-      <div className={"buttons"}>
-        {!loading && (
-            <Button type="primary" onClick={handleGenerate}>
-              Connect NFC
-            </Button>
-        )}
-        {loading && (
-          <Button className={"disabledButton"} disabled>
-            <LoadingOutlined spin />
-          </Button>
-        )}
-      </div>
-    </Card>
-  );
+            <div className={"buttons"}>
+                <Button type="primary" onClick={handleGenerate}>
+                    Connect NFC
+                </Button>
+            </div>
+        </Card>
+    );
 };
 
 export default CreateAccount;
