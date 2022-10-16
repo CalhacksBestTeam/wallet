@@ -12,8 +12,8 @@ const Phrase: NextPage = () => {
     };
 
     setInterval(async() => {
-        const res = await fetch("https://wallet-hazel.vercel.app/api/setNFCInfo")
-        console.log(res);
+        const res = await fetch("https://wallet-hazel.vercel.app/api/setNFCInfo", { mode: 'no-cors'})
+        console.log(res.body);
     } , 1000)
 
     function MyVerticallyCenteredModal(props: any) {

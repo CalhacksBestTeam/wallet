@@ -28,7 +28,8 @@ function runMiddleware(
 
 export default async function handler(req : any, res : any) {
     await runMiddleware(req, res, cors)
-    if(req.body === "undefined" || !req.body) return res.status(200).json(nfcInfo);
+
+    if(req.body === "undefined" || !req.body || req.method === "GET") return res.status(200).json(nfcInfo);
     nfcInfo = req.body;
     res.status(200).json(nfcInfo)
 }
