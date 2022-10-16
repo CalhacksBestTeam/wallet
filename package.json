@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@noble/ed25519": "^1.7.1",
     "@solana/web3.js": "^1.29.0",
     "@types/styled-components": "^5.1.14",
     "antd": "^4.16.13",
