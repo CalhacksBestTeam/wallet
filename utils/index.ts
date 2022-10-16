@@ -55,7 +55,7 @@ const handleAirdrop = async (network: Cluster, account: Keypair | null) => {
     // (d) request the airdrop using the connection instance
     // Note that you should include the amount to airdrop (consider using the LAMPORTS_PER_SOL constant from the web3.js library)
     // Documentation Reference: https://solana-labs.github.io/solana-web3.js/classes/Connection.html
-    const confirmation = await connection.requestAirdrop(publicKey, 10 * LAMPORTS_PER_SOL);
+    const confirmation = await connection.requestAirdrop(publicKey, LAMPORTS_PER_SOL);
 
     // (d) confirm the transaction using the connection instance and the confirmation string returned from the airdrop
     // Documentation Reference: https://solana-labs.github.io/solana-web3.js/classes/Connection.html

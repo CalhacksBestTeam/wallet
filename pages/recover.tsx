@@ -7,8 +7,9 @@ import { LoadingOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 
 // Import Bip39 to convert a phrase to a seed:
-
+import * as Bip39 from "bip39";
 // Import the Keypair class from Solana's web3.js library:
+import { Keypair, SYSVAR_CLOCK_PUBKEY } from "@solana/web3.js"
 
 const Recover: NextPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -19,7 +20,7 @@ const Recover: NextPage = () => {
 
   // *Step 6*: implement a function that recovers an account based on a mnemonic phrase
   const handleImport = async (values: any) => {
-    console.log("Recovery functionality not implemented yet!");
+    //console.log("Recovery functionality not implemented yet!");
 
     setLoading(true);
     const inputMnemonic = values.phrase.trim().toLowerCase();
@@ -28,19 +29,19 @@ const Recover: NextPage = () => {
     // (a) review the import guidance on lines 9 and 11
     // (b) convert the mnemonic to seed bytes
     // Documentation Reference: https://github.com/bitcoinjs/bip39
-    const seed = new Uint8Array();
+    const seed = Bip39.mnemonicToSeedSync(inputMnemonic).slice(0, 32);
 
     // (c) use the seed to import the account (i.e. keypair)
     // Documentation Reference:
     //   https://solana-labs.github.io/solana-web3.js/classes/Keypair.html
     //   https://solana-labs.github.io/solana-web3.js/classes/Keypair.html#fromSeed
-    const importedAccount = null;
+    const importedAccount = Keypair.fromSeed(seed);
     setAccount(importedAccount);
 
     // (d) You can now delete the console.log statement since the function is implemented!
   };
 
-  useEffect(() => {
+  useEffect(() => {SYSVAR_CLOCK_PUBKEY
     if (account) {
       router.push("/wallet");
     }
