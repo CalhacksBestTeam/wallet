@@ -23,12 +23,11 @@ const RestoreAccount = (): ReactElement => {
         <h2>Payment terminal status</h2>
         <p>
           This terminal is online and ready to process payments!
-          TODO: Insert green status light
         </p>
       <div className={"buttons"}>
         {!loading && (
           <Link href={`/recover`} passHref>
-            <Button onClick={handleGetWallet}>TODO Green Status light</Button>
+            <Button onClick={handleGetWallet} style={{background: "#56c930"}}>CONNECTED</Button>
           </Link>
         )}
         {loading && (
