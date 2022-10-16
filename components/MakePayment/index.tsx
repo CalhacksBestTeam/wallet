@@ -36,7 +36,6 @@ const CreateAccount = (props: { setShow: Function }): ReactElement => {
             <p>
                 Send Sol to an address of your choice.
             </p>
-
             <div className={"buttons"}>
                 <Button type="primary" onClick={handleGenerate}>
                     Connect NFC
