@@ -3,6 +3,8 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import CreateAccount from "../components/CreateAccount";
 import RestoreAccount from "../components/RestoreAccount";
+import MakePayment from "../components/MakePayment";
+import TerminalStatus from "../components/TerminalStatus";
 import styled from "styled-components";
 const { io } = require("socket.io-client");
 
@@ -48,8 +50,8 @@ const Home: NextPage = () => {
       </HomeTitle>
 
       <HomeGrid>
-        <CreateAccount />
-        <RestoreAccount />
+        <MakePayment />
+        <TerminalStatus />
       </HomeGrid>
     </>
   );
