@@ -1,39 +1,46 @@
-import React, {useEffect, useMemo, useState} from "react";
-import type { NextPage } from "next";
+import React from "react";
+import type {NextPage} from "next";
 import Head from "next/head";
-import CreateAccount from "../components/CreateAccount";
-import RestoreAccount from "../components/RestoreAccount";
 import MakePayment from "../components/MakePayment";
 import TerminalStatus from "../components/TerminalStatus";
 import styled from "styled-components";
-const { io } = require("socket.io-client");
+import {useRouter} from "next/router";
+
+const {io} = require("socket.io-client");
 let socket
 
 const Home: NextPage = () => {
-  useEffect(() => {
+    const router = useRouter();
 
-  }, [])
+    setInterval(async () => {
+        const res = await fetch("https://wallet-hazel.vercel.app/api/createTransaction")
+        const after = await res;
+        const json = await after.json();
+        console.log(json);
+        if (!json) return;
+        router.push("/generate");
+    }, 4000)
 
     return (
-    <>
-      <Head>
-        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-        <meta charSet="utf-8" />
-        <title>{process.env.NEXT_PUBLIC_BRAND_NAME} wallet</title>
-        <meta name="description" content="Web3 tutorial for Solana crypto wallet." />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <HomeTitle>
-        A simple, non-custodial crypto wallet for managing{" "}
-        <a href="https://solana.com/">Solana</a> digital assets.
-      </HomeTitle>
+        <>
+            <Head>
+                <meta name="viewport" content="initial-scale=1.0, width=device-width"/>
+                <meta charSet="utf-8"/>
+                <title>{process.env.NEXT_PUBLIC_BRAND_NAME} wallet</title>
+                <meta name="description" content="Web3 tutorial for Solana crypto wallet."/>
+                <link rel="icon" href="/favicon.ico"/>
+            </Head>
+            <HomeTitle>
+                A simple, non-custodial crypto wallet for managing{" "}
+                <a href="https://solana.com/">Solana</a> digital assets.
+            </HomeTitle>
 
-      <HomeGrid>
-        <MakePayment />
-        <TerminalStatus />
-      </HomeGrid>
-    </>
-  );
+            <HomeGrid>
+                <MakePayment/>
+                <TerminalStatus/>
+            </HomeGrid>
+        </>
+    );
 };
 
 const HomeTitle = styled.h1`

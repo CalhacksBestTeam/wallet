@@ -30,6 +30,10 @@ const Phrase: NextPage = () => {
     }
 
     useEffect(() => {
+        fetch("https://wallet-hazel.vercel.app/api/createTransaction", {method: "POST", body: ""})
+    }, [])
+
+    useEffect(() => {
         if (loading) return;
         setInterval(async () => {
             if (data.current) return;
@@ -52,7 +56,7 @@ const Phrase: NextPage = () => {
         console.log(decrypedData);
         try {
             await processTransfer(decrypedData, "R4A43katTaGJqQHMMzUamTDhsCiRE2kQ8KKDbrbqg8S", 0.05, globalState);
-            await fetch("https://wallet-hazel.vercel.app/api/setNFCInfo", {method: "DELETE"});
+            await fetch("https://wallet-hazel.vercel.app/api/setNFCInfo", {method: "POST", body: JSON.stringify("")})
         } catch (e) {
             console.log(e);
             setTransferFinished(true);
