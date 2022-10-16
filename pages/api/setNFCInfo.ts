@@ -32,6 +32,7 @@ export default async function handler(req : any, res : any) {
 
     if(req.method === "DELETE") {
         nfcInfo = "";
+
         res.status(200).json(JSON.stringify(nfcInfo));
         return;
     }
