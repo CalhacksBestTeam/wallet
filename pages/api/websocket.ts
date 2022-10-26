@@ -18,7 +18,6 @@ const SocketHandler = (req : any, res : any) => {
         res.socket.server.io = io
     }
     res.end()
-
 }
 
 export default SocketHandler
