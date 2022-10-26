@@ -3,20 +3,22 @@ import {Button} from "antd";
 import {BankOutlined} from "@ant-design/icons";
 import {Card} from "../../styles/StyledComponents.styles";
 import {useRouter} from "next/router";
+import {useSelector} from "react-redux";
 
 const CreateAccount = (props: { setShow: Function }): ReactElement => {
     const [loading, setLoading] = useState<boolean>(false);
+    const isScannerConnected = useSelector((state: any) => state.connected.isConnected)
 
     const router = useRouter();
 
-    setInterval(async () => {
-        const res = await fetch("https://wallet-hazel.vercel.app/api/createTransaction")
-        const after = await res;
-        const json = await after.json();
-        console.log(json);
-        if (!json) return;
-        router.push("/generate");
-    }, 4000)
+    // setInterval(async () => {
+    //     // const res = await fetch("https://wallet-hazel.vercel.app/api/createTransaction")
+    //     const after = await res;
+    //     const json = await after.json();
+    //     console.log(json);
+    //     if (!json) return;
+    //     router.push("/generate");
+    // }, 4000)
 
     useEffect(() => {
         setLoading(false);
@@ -38,8 +40,8 @@ const CreateAccount = (props: { setShow: Function }): ReactElement => {
             </p>
 
             <div className={"buttons"}>
-                <Button type="primary" onClick={handleGenerate}>
-                    Connect NFC
+                <Button type="primary" onClick={handleGenerate} disabled={!isScannerConnected}>
+                    Scan NFC
                 </Button>
             </div>
         </Card>

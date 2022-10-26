@@ -12,6 +12,7 @@ import styles from "./index.module.css";
 import { useGlobalState } from "../../context";
 import { useRouter } from "next/router";
 import { Cluster } from "@solana/web3.js";
+import {useSelector} from "react-redux";
 
 type DomEvent = {
   domEvent: BaseSyntheticEvent;
@@ -22,6 +23,8 @@ type DomEvent = {
 const Layout = ({ children }: { children: JSX.Element }): ReactElement => {
   const { network, setNetwork, account, setAccount, setBalance, setMnemonic } =
     useGlobalState();
+  const isScannerConnected = useSelector((state : any) => state.connected.isConnected)
+
 
   const router = useRouter();
 
@@ -32,17 +35,9 @@ const Layout = ({ children }: { children: JSX.Element }): ReactElement => {
   };
 
   const menu = (
-    <Menu>
-      <Menu.Item onClick={selectNetwork} key="1">
-        Mainnet {network === "mainnet-beta" && <Badge status="processing" />}
-      </Menu.Item>
-      <Menu.Item onClick={selectNetwork} key="2">
-        Devnet {network === "devnet" && <Badge status="processing" />}
-      </Menu.Item>
-      <Menu.Item onClick={selectNetwork} key="3">
-        Testnet {network === "testnet" && <Badge status="processing" />}
-      </Menu.Item>
-    </Menu>
+    <div className="d-flex flex-row justify-content-center">
+      <p className={isScannerConnected ? "text-success" : "text-danger"}>{isScannerConnected ? "Scanner Connected" : "Scanner Disconnected"}</p>
+    </div>
   );
 
   const handleLogout = () => {
@@ -73,36 +68,10 @@ const Layout = ({ children }: { children: JSX.Element }): ReactElement => {
           <Link href={`/`} passHref>
             <div className={`${styles.top} ${styles.logo}`}>{process.env.NEXT_PUBLIC_BRAND_NAME}</div>
           </Link>
-
-          <Menu
-            mode="horizontal"
-            className={styles.nav}
-            selectedKeys={[router.pathname]}
-          >
-            <Dropdown className={styles.top} overlay={menu} disabled={!account}>
-              <a
-                className="ant-dropdown-link"
-                onClick={(e) => e.preventDefault()}
-              >
-                Network <DownOutlined />
-              </a>
-            </Dropdown>
-
-            {account && (
-              <Dropdown
-                className={styles.top}
-                overlay={profile}
-                disabled={!account}
-              >
-                <a
-                  className="ant-dropdown-link"
-                  onClick={(e) => e.preventDefault()}
-                >
-                  <UserOutlined />
-                </a>
-              </Dropdown>
-            )}
-          </Menu>
+          <div className="d-flex flex-row justify-content-center align-items-center">
+            <p className="mb-0">{isScannerConnected ? "Scanner Connected" : "Scanner Disconnected"}</p>
+            <div className={`${styles.dot} ${!isScannerConnected ? styles.red : styles.green}`} />
+          </div>
         </header>
 
         {children}

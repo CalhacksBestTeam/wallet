@@ -1,0 +1,14 @@
+.connectText {
+    font-size: 14px;
+    font-weight: bolder;
+    color: black;
+    margin: 0 0 0 10px;
+}
+
+.connectedText {
+    font-size: 14px;
+    font-weight: bolder;
+    color: white;
+    margin: 0 0 0 10px;
+    padding: 5px 10px;
+}

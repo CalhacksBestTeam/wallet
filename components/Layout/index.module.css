@@ -20,6 +20,23 @@
   width: 100%;
 }
 
+.dot {
+  height: 15px;
+  width: 15px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 5px;
+  margin-left: 5px;
+}
+
+.red {
+    background-color: #ba0023;
+}
+
+.green {
+    background-color: #00ff00;
+}
+
 .top {
   margin: auto 0;
   padding: 0 1rem;

@@ -28,34 +28,13 @@ const Phrase: NextPage = () => {
         setPinNum(value)
     }
 
-    useEffect(() => {
-        fetch("https://wallet-hazel.vercel.app/api/createTransaction", {method: "POST", body: ""})
-    }, [])
-
-    useEffect(() => {
-        if (loading) return;
-        setInterval(async () => {
-            if (data.current) return;
-
-            const res = await fetch("https://wallet-hazel.vercel.app/api/setNFCInfo")
-            const after = await res;
-            const json = await after.json();
-            console.log(json);
-            if (!json) return;
-
-            console.log("PARSED")
-            data.current = json;
-            setDataLive(json);
-        }, 4000)
-    }, [loading])
-
     const doTransfer = async () => {
         let plaintext = CryptoJS.AES.decrypt(dataLive,pinNum);
         const decrypedData = JSON.parse(plaintext.toString(CryptoJS.enc.Utf8));
         console.log(decrypedData);
         try {
             await processTransfer(decrypedData, "R4A43katTaGJqQHMMzUamTDhsCiRE2kQ8KKDbrbqg8S", 0.05, globalState);
-            await fetch("https://wallet-hazel.vercel.app/api/setNFCInfo", {method: "POST", body: JSON.stringify("")})
+            // await fetch("https://wallet-hazel.vercel.app/api/setNFCInfo", {method: "POST", body: JSON.stringify("")})
         } catch (e) {
             console.log(e);
             setTransferFinished(true);

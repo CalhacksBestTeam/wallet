@@ -10,9 +10,17 @@ const SocketHandler = (req : any, res : any) => {
         const io = new Server(res.socket.server)
 
         io.sockets.on('connection', (socket : any) => {
+            socket.join("test")
+
             socket.on('message', (data : any) => {
                 console.log(data)
-                socket.emit("message", data)
+                io.emit("message", data)
+            })
+
+            socket.on('ping', () => {
+                console.log("RECIEVED PING")
+                // socket.in("test").emit('pong')
+                io.emit('pong')
             })
         })
         res.socket.server.io = io
