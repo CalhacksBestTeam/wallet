@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import styles from "./PinScreen.module.css";
 
 const pinPad = [[1, 2, 3], [4, 5, 6], [7, 8, 9], ["", 0, ""]];
@@ -9,21 +9,17 @@ const PinScreen = (props: { handleInput?: Function }) => {
     const handleInput = (value: string) => {
         setInput(value);
     }
-    //
-    // useEffect(() => {
-    //     document.addEventListener('keydown', function (event) {
-    //         if (event.key === "Backspace") {
-    //             setInput(input.slice(0, -1));
-    //         } else setInput(input + event.key)
-    //     })
-    // }, [input])
 
     return (
         <div>
             <div className={styles.pinDiv}>
                 <input value={input} onInput={(value: any) => {
                     handleInput(value.target.value)
-                }} className={`w-100 mb-2 text-center ${styles.input}`}/>
+                }} className={`w-100 mb-2 text-center ${styles.input}`} autoFocus={true} onKeyDown={(key) => {
+                    if (key.key === "Enter") {
+                        if(props.handleInput) props.handleInput(input);
+                    }
+                }}/>
                 {pinPad.map((row, rowIndex) => {
                         return <div className={`d-flex flex-row justify-content-between flex-fill mb-1 ${styles.pinRow}`} key={"row" + row}>
                             {row.map((pin, pinIndex) => {

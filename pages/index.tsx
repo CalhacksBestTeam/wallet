@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useState} from "react";
 import type {NextPage} from "next";
 import Head from "next/head";
 import MakePayment from "../components/MakePayment";
@@ -8,12 +8,14 @@ import {Button, Form, Modal} from "react-bootstrap";
 import {useRouter} from "next/router";
 import io from 'socket.io-client';
 import {Command, IWebsocketMessage, Source} from "../config/Types";
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import {setConnected, setDisconnected} from "../store/features/connectedSlice";
 import PinScreen from "../components/pin-screen/PinScreen";
 import {LoadingOutlined} from "@ant-design/icons";
 import {useGlobalState} from "../context";
 import {processTransfer} from "../utils/transfer";
+import {Keypair, PublicKey, SystemProgram, Transaction, VersionedMessage} from "@solana/web3.js";
+
 let CryptoJS = require("crypto-js");
 
 
@@ -29,31 +31,47 @@ const Home: NextPage = () => {
     const [transferFinished, setTransferFinished] = useState<boolean>(false);
     const [dataLive, setDataLive] = useState<string | undefined>(undefined);
     const [pinNum, setPinNum] = useState<string | undefined>(undefined);
+    const [transaction, setTransaction] = useState<any | null>(null)
+
     const globalState = useGlobalState();
 
-    const handleSubmit = (value : string) => {
+    const handleSubmit = (value: string) => {
         setPinNum(value)
     }
 
-    const doTransfer = async () => {
-        let plaintext = CryptoJS.AES.decrypt(dataLive,pinNum);
-        const decrypedData = JSON.parse(plaintext.toString(CryptoJS.enc.Utf8));
-        console.log(decrypedData);
-        try {
-            await processTransfer(decrypedData, "R4A43katTaGJqQHMMzUamTDhsCiRE2kQ8KKDbrbqg8S", 0.05, globalState);
-            // await fetch("https://wallet-hazel.vercel.app/api/setNFCInfo", {method: "POST", body: JSON.stringify("")})
-        } catch (e) {
-            console.log(e);
-            setTransferFinished(true);
-            return;
-        }
+    const dec = CryptoJS.AES.decrypt('U2FsdGVkX1+gCR4IpmlsPKZz7ksqSmogQd7I39iIUoqiyCPna5cFCtDryNcWDO9PWSuTYtgWAnc7gQLajFOXoKmPKIVOy0pRf7GMlvrwj4gvJ1yXTzzGKbPImYXzjfDDxIjGTDBgONwxIOlMLV7rzvtLvki8XsdsY/YO3+i1xwKNlUhBE9qnfabilNhlTvkuVv8xPuFmXCYaVft10X1HjMQZW1xXSEpOWx7GZRgzqkSv71EqW2LforFwiwcrhp+Xxc9qqwTIYdcYuPMpxush5X+Y0znRVgG7++qDL6dKIAHbwSjLAUNgwFiH2WgQiIRuoomgk4R2WHlLAhRpLDLB+Q==', "2019")
+    const buf = JSON.parse(dec.toString(CryptoJS.enc.Utf8));
+    console.log(Buffer.from(buf))
+
+    const doTransfer = async (transaction: any) => {
+        let plaintext = CryptoJS.AES.decrypt(dataLive, pinNum);
+        const web3 = require("@solana/web3.js");
+
+        const secret = Uint8Array.from(Buffer.from(JSON.parse(plaintext.toString(CryptoJS.enc.Utf8))));
+        const tx = transaction;
+        const signer = web3.Keypair.fromSecretKey(secret);
+
+        const connection = new web3.Connection(
+            web3.clusterApiUrl('devnet'),
+            'confirmed',
+        );
+
+        const signature = await web3.sendAndConfirmTransaction(
+            connection,
+            tx,
+            [signer],
+        );
+
+        console.log('SIGNATURE', signature);
+
+
         setTransferFinished(true);
     }
 
     useEffect(() => {
-        if(!pinNum) return;
-        doTransfer()
-    }, [pinNum, doTransfer])
+        if (!pinNum) return;
+        doTransfer(transaction)
+    }, [pinNum, doTransfer, transaction])
 
     useEffect(() => {
         console.log(dataLive);
@@ -62,6 +80,9 @@ const Home: NextPage = () => {
     }, [dataLive])
 
     useEffect(() => {
+        const web3 = require("@solana/web3.js");
+
+
         fetch("/api/websocket").then((res) => {
             const socket = io();
 
@@ -80,16 +101,51 @@ const Home: NextPage = () => {
                 setLastPong(new Date().toISOString());
             });
 
-            socket.on('message', (data : IWebsocketMessage) => {
+            socket.on('message', async (data: IWebsocketMessage) => {
                 console.log(data)
-                if(data.source === Source.Phone) {
-                    if(data.command === Command.Connect) {
+                if (data.source === Source.Phone) {
+                    if (data.command === Command.Connect) {
                         dispatch(setConnected())
                     } else if (data.command === Command.Disconnect) {
                         dispatch(setDisconnected())
                     } else if (data.command === Command.Scan && data.data) {
                         console.log("RECIEVED SCAN DATA", data)
                         setDataLive(data.data)
+                    }
+                }
+
+                if (data.source === Source.Dapp) {
+                    if (data.command === Command.Connect) {
+                        const message: IWebsocketMessage = {
+                            source: Source.Wallet,
+                            command: Command.SendPublicKey,
+                            data: "82nmirhEM86RXiyWkZb64Pkjpn4J7iVaYJmni4MueLcM"
+                        }
+
+                        console.log("DAPP CONNECTED", data)
+                        socket.emit("message", message)
+                    }
+
+                    if (data.command === Command.SignAndSendTransaction) {
+                        if (!data.data) return;
+                        const transaction = JSON.parse(data.data).transaction
+                        const tx = web3.Transaction.from(Buffer.from(transaction));
+                        setTransaction(tx)
+
+                        // const signer = web3.Keypair.fromSecretKey(Uint8Array.from(mykeypair));
+                        //
+                        // const connection = new web3.Connection(
+                        //     web3.clusterApiUrl('devnet'),
+                        //     'confirmed',
+                        // );
+                        //
+                        // const signature = await web3.sendAndConfirmTransaction(
+                        //     connection,
+                        //     tx,
+                        //     [signer],
+                        // );
+                        //
+                        // console.log('SIGNATURE', signature);
                     }
                 }
             })
@@ -102,11 +158,34 @@ const Home: NextPage = () => {
         })
     }, [dispatch]);
 
-    const handleTransaction = () => {
+    const handleTransaction = async() => {
+        const web3 = require("@solana/web3.js");
+        const connection = new web3.Connection(
+            web3.clusterApiUrl('devnet'),
+            'confirmed',
+        );
+        const lamports = await connection.getMinimumBalanceForRentExemption(0);
+
+        const transaction = new Transaction().add(
+            SystemProgram.transfer({
+                fromPubkey: new PublicKey('82nmirhEM86RXiyWkZb64Pkjpn4J7iVaYJmni4MueLcM'),
+                toPubkey: Keypair.generate().publicKey,
+                lamports,
+            })
+        );
+
+        setTransaction(transaction)
         setShowInfoModal(false)
-        setShowTransactionModal(true);
-        requestNFCInfo();
     }
+
+    useEffect(() => {
+        if(transaction) {
+            requestNFCInfo();
+            setShowTransactionModal(true);
+        } else {
+            setShowTransactionModal(false)
+        }
+    }, [transaction])
 
     const requestNFCInfo = async () => {
         if (!socket) return;
@@ -139,7 +218,7 @@ const Home: NextPage = () => {
                 </Modal.Body> : <Modal.Body>
                     <p className="text-center">Transfer Completed Successfully!</p>
                     <div className="d-flex flex-row justify-content-center">
-                        <img src={"/download.png"}  alt={"checkmark"}/>
+                        <img src={"/download.png"} alt={"checkmark"}/>
                     </div>
                 </Modal.Body>}
             </Modal>
@@ -161,12 +240,15 @@ const Home: NextPage = () => {
                     <Form>
                         <Form.Group className="mb-3" controlId="formBasicEmail">
                             <Form.Label>Recipients Address</Form.Label>
-                            <Form.Control type="email" placeholder="Enter Wallet Address" />
+                            <Form.Control type="email" placeholder="Enter Wallet Address"/>
                             <Form.Label>Amount</Form.Label>
-                            <Form.Control type="email" placeholder="Enter Amount" />
+                            <Form.Control type="email" placeholder="Enter Amount"/>
                         </Form.Group>
                         <div className="d-flex flex-row justify-content-center">
-                            <Button variant="primary" type="submit" onClick={() => {handleTransaction()}}>
+                            <Button variant="primary" type="submit" onClick={(event) => {
+                                event.preventDefault()
+                                handleTransaction()
+                            }}>
                                 Submit
                             </Button>
                         </div>
@@ -176,7 +258,6 @@ const Home: NextPage = () => {
             </Modal>
         );
     }
-
 
 
     return (
