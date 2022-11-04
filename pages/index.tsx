@@ -4,17 +4,14 @@ import Head from "next/head";
 import MakePayment from "../components/MakePayment";
 import TerminalStatus from "../components/TerminalStatus";
 import styled from "styled-components";
-import {Button, Form, Modal} from "react-bootstrap";
+import {Button, Modal} from "react-bootstrap";
 import {useRouter} from "next/router";
 import io from 'socket.io-client';
 import {Command, IWebsocketMessage, Source} from "../config/Types";
 import {useDispatch} from "react-redux";
 import {setConnected, setDisconnected} from "../store/features/connectedSlice";
-import PinScreen from "../components/pin-screen/PinScreen";
 import {LoadingOutlined} from "@ant-design/icons";
-import {useGlobalState} from "../context";
-import {processTransfer} from "../utils/transfer";
-import web3, {Keypair, PublicKey, SystemProgram, Transaction, VersionedMessage} from "@solana/web3.js";
+import {PublicKey, SystemProgram, Transaction} from "@solana/web3.js";
 import ScaleSwipeInput from "../components/ScaleSwipeInput/ScaleSwipeInput";
 
 let CryptoJS = require("crypto-js");
@@ -31,6 +28,7 @@ const Home: NextPage = () => {
     const [transferFinished, setTransferFinished] = useState<boolean>(false);
     const [dataLive, setDataLive] = useState<string | undefined>(undefined);
     const [pinNum, setPinNum] = useState<string | undefined>(undefined);
+    const [pinNumRef, setPinNumRef] = useState<string>("")
     const [transaction, setTransaction] = useState<any | null>(null)
 
     const [recipientWallet, setRecipientWallet] = useState<string>("")
@@ -51,19 +49,22 @@ const Home: NextPage = () => {
     }
 
     const doTransfer = async (transaction: any) => {
-        let plaintext = CryptoJS.AES.decrypt(dataLive, pinNum);
-        const web3 = require("@solana/web3.js");
-
-        const secret = Uint8Array.from(Buffer.from(JSON.parse(plaintext.toString(CryptoJS.enc.Utf8))));
-        const tx = transaction;
-        const signer = web3.Keypair.fromSecretKey(secret);
-
-        const connection = new web3.Connection(
-            web3.clusterApiUrl('devnet'),
-            'confirmed',
-        );
+        if (!transaction) return;
 
         try {
+            let plaintext = CryptoJS.AES.decrypt(dataLive, pinNum);
+            const web3 = require("@solana/web3.js");
+
+            const secret = Uint8Array.from(Buffer.from(JSON.parse(plaintext.toString(CryptoJS.enc.Utf8))));
+            const tx = transaction;
+            const signer = web3.Keypair.fromSecretKey(secret);
+
+            const connection = new web3.Connection(
+                web3.clusterApiUrl('devnet'),
+                'confirmed',
+            );
+
+
             const signature = await web3.sendAndConfirmTransaction(
                 connection,
                 tx,
@@ -71,14 +72,15 @@ const Home: NextPage = () => {
             );
 
             console.log('SIGNATURE', signature);
-        } catch (e) {}
+        } catch (e) {
+        }
 
         setTransferFinished(true);
         resetEverything();
     }
 
     useEffect(() => {
-        if (!pinNum) return;
+        if (!pinNum || !transaction) return;
         doTransfer(transaction)
     }, [pinNum, doTransfer, transaction])
 
@@ -168,7 +170,7 @@ const Home: NextPage = () => {
         })
     }, [dispatch]);
 
-    const handleTransaction = async() => {
+    const handleTransaction = async () => {
         const web3 = require("@solana/web3.js");
         const connection = new web3.Connection(
             web3.clusterApiUrl('devnet'),
@@ -178,7 +180,7 @@ const Home: NextPage = () => {
 
 
         console.log(lamports)
-        const num : number = Number(amount) * 1000000000;
+        const num: number = Number(amount) * 1000000000;
 
 
         const transaction = new Transaction().add(
@@ -194,7 +196,7 @@ const Home: NextPage = () => {
     }
 
     useEffect(() => {
-        if(transaction) {
+        if (transaction) {
             setTransferFinished(false);
             setShowTransactionModal(true);
             requestNFCInfo();
@@ -211,38 +213,6 @@ const Home: NextPage = () => {
         }
 
         socket.emit('message', message);
-    }
-
-    const TransactionModal = (props: any) => {
-        return (
-            <Modal
-                {...props}
-                size="lg"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-                animation={false}
-                onHide={() => {
-                    setShowTransactionModal(false)
-                    resetEverything()
-                }}
-            >
-                {!transferFinished ? <Modal.Body>
-                    <p className={"text-center"}>
-                        {dataLive ? "Enter your Pin" : "Please scan your card"}
-                    </p>
-                    {dataLive ?
-                        <div className="d-flex flex-row justify-content-center"><PinScreen handleInput={handleSubmit}/>
-                        </div> : <div className="d-flex flex-row justify-content-center">
-                            <LoadingOutlined style={{fontSize: 140}} spin/>
-                        </div>}
-                </Modal.Body> : <Modal.Body>
-                    <p className="text-center">Transfer Completed Successfully!</p>
-                    <div className="d-flex flex-row justify-content-center">
-                        <img src={"/download.png"} alt={"checkmark"}/>
-                    </div>
-                </Modal.Body>}
-            </Modal>
-        );
     }
 
     return (
@@ -269,9 +239,13 @@ const Home: NextPage = () => {
             >
                 <Modal.Body>
                     <p className="text-center">Enter destination address</p>
-                    <ScaleSwipeInput value={recipientWallet} setValue={setRecipientWallet} />
+                    <div className="d-flex flex-row justify-content-center">
+                        <ScaleSwipeInput value={recipientWallet} setValue={setRecipientWallet}/>
+                    </div>
                     <p className="text-center">Amount</p>
-                    <ScaleSwipeInput value={amount} setValue={setAmount} />
+                    <div className="d-flex flex-row justify-content-center">
+                        <ScaleSwipeInput value={amount} setValue={setAmount}/>
+                    </div>
                     <div className="d-flex flex-row justify-content-center">
                         <Button variant="primary" type="submit" onClick={(event) => {
                             event.preventDefault()
@@ -283,7 +257,38 @@ const Home: NextPage = () => {
                 </Modal.Body>
             </Modal>
 
-            <TransactionModal show={showTransactionModal}/>
+            <Modal
+                show={showTransactionModal}
+                size="lg"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+                animation={false}
+                onHide={() => {
+                    setShowTransactionModal(false)
+                    resetEverything()
+                }}
+            >
+                {!transferFinished ? <Modal.Body style={{padding: 30}}>
+                    <p className={"text-center"}>
+                        {dataLive ? "Enter your Pin" : "Please scan your card"}
+                    </p>
+                    {dataLive ?
+                        <div className="d-flex flex-row justify-content-center">
+                            <ScaleSwipeInput value={pinNumRef} setValue={setPinNumRef} onSubmit={() => {
+                                setPinNum(pinNumRef)
+                            }}/>
+                        </div>
+                        :
+                        <div className="d-flex flex-row justify-content-center">
+                            <LoadingOutlined style={{fontSize: 140}} spin/>
+                        </div>}
+                </Modal.Body> : <Modal.Body>
+                    <p className="text-center">Transfer Completed Successfully!</p>
+                    <div className="d-flex flex-row justify-content-center">
+                        <img src={"/download.png"} alt={"checkmark"}/>
+                    </div>
+                </Modal.Body>}
+            </Modal>
             <HomeGrid>
                 <MakePayment setShow={setShowInfoModal}/>
                 <TerminalStatus socket={socket}/>

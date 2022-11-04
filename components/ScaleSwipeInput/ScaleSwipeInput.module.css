@@ -1,0 +1,15 @@
+.inputField {
+    border: none !important;
+    box-shadow: none;
+    -webkit-appearance: none;
+    text-align: left !important;
+    border-bottom: 3px green solid !important;
+    width: 600px !important;
+}
+
+.inputField:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border-bottom: 3px limegreen solid !important;
+    border: none;
+}
