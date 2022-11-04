@@ -14,7 +14,7 @@ import PinScreen from "../components/pin-screen/PinScreen";
 import {LoadingOutlined} from "@ant-design/icons";
 import {useGlobalState} from "../context";
 import {processTransfer} from "../utils/transfer";
-import {Keypair, PublicKey, SystemProgram, Transaction, VersionedMessage} from "@solana/web3.js";
+import web3, {Keypair, PublicKey, SystemProgram, Transaction, VersionedMessage} from "@solana/web3.js";
 import ScaleSwipeInput from "../components/ScaleSwipeInput/ScaleSwipeInput";
 
 let CryptoJS = require("crypto-js");
@@ -63,14 +63,15 @@ const Home: NextPage = () => {
             'confirmed',
         );
 
-        const signature = await web3.sendAndConfirmTransaction(
-            connection,
-            tx,
-            [signer],
-        );
+        try {
+            const signature = await web3.sendAndConfirmTransaction(
+                connection,
+                tx,
+                [signer],
+            );
 
-        console.log('SIGNATURE', signature);
-
+            console.log('SIGNATURE', signature);
+        } catch (e) {}
 
         setTransferFinished(true);
         resetEverything();

@@ -46,7 +46,7 @@ const handleAirdrop = async (network: Cluster | any, account: Keypair | null) =>
     //   https://solana-labs.github.io/solana-web3.js/classes/Connection.html
     //   https://solana-labs.github.io/solana-web3.js/modules.html#clusterApiUrl
     console.log("Airdrop functionality not implemented yet!");
-    const connection = new Connection(clusterApiUrl(network), "confirmed");;
+    const connection = new Connection(clusterApiUrl(network), "confirmed");
 
     // (c) get the key using one of the accessors on the account passed in as an argument
     // Documentation Reference: https://solana-labs.github.io/solana-web3.js/classes/Keypair.html
