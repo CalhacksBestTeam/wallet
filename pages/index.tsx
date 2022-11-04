@@ -13,6 +13,7 @@ import {setConnected, setDisconnected} from "../store/features/connectedSlice";
 import {LoadingOutlined} from "@ant-design/icons";
 import {PublicKey, SystemProgram, Transaction} from "@solana/web3.js";
 import ScaleSwipeInput from "../components/ScaleSwipeInput/ScaleSwipeInput";
+import {signature} from "@solana/web3.js/src/layout";
 
 let CryptoJS = require("crypto-js");
 
@@ -28,6 +29,7 @@ const Home: NextPage = () => {
     const [transferFinished, setTransferFinished] = useState<boolean>(false);
     const [dataLive, setDataLive] = useState<string | undefined>(undefined);
     const [pinNum, setPinNum] = useState<string | undefined>(undefined);
+    const [transactionID, setTransactionID] = useState<string | undefined>("");
     const [pinNumRef, setPinNumRef] = useState<string>("")
     const [transaction, setTransaction] = useState<any | null>(null)
 
@@ -45,7 +47,8 @@ const Home: NextPage = () => {
     const resetEverything = () => {
         setDataLive(undefined);
         setPinNum(undefined);
-        setTransaction(null)
+        setTransaction(null);
+        setTransactionID(undefined);
     }
 
     const doTransfer = async (transaction: any) => {
@@ -71,18 +74,19 @@ const Home: NextPage = () => {
                 [signer],
             );
 
+
+            setTransactionID(signature)
             console.log('SIGNATURE', signature);
         } catch (e) {
         }
 
         setTransferFinished(true);
-        resetEverything();
     }
 
     useEffect(() => {
-        if (!pinNum || !transaction) return;
+        if (!pinNum || !transaction || transactionID) return;
         doTransfer(transaction)
-    }, [pinNum, doTransfer, transaction])
+    }, [pinNum, transaction, transactionID])
 
     useEffect(() => {
         console.log(dataLive);
@@ -283,9 +287,12 @@ const Home: NextPage = () => {
                             <LoadingOutlined style={{fontSize: 140}} spin/>
                         </div>}
                 </Modal.Body> : <Modal.Body>
-                    <p className="text-center">Transfer Completed Successfully!</p>
                     <div className="d-flex flex-row justify-content-center">
-                        <img src={"/download.png"} alt={"checkmark"}/>
+                        <img src={"/download.png"} alt={"checkmark"} style={{height: 70, width: 70}}/>
+                    </div>
+                    <p className="text-center" style={{fontSize: 40}}>Transfer Completed Successfully!</p>
+                    <div className="d-flex flex-row justify-content-center">
+                        <a href={`https://explorer.solana.com/tx/${transactionID}?cluster=devnet`} target={"_blank"} rel="noreferrer" style={{color: "green"}}>View Transaction</a>
                     </div>
                 </Modal.Body>}
             </Modal>
