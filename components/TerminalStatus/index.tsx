@@ -57,14 +57,14 @@ const RestoreAccount = (props: { socket: any | null }): ReactElement => {
             <UnlockOutlined
                 style={{fontSize: "3rem", margin: "2rem 0", display: "block"}}
             />
-            <h2>Payment terminal status</h2>
+            <h2 className="d-flex flex-row" style={{fontSize:28}}>NFC Terminal {isScannerConnected ? <p className="mb-0 text-success" style={{paddingLeft:5}}>connected</p> : <p className="mb-0 text-danger" style={{paddingLeft:5}}>offline</p>}</h2>
             <p>
-                This terminal is online and ready to process payments!
+                {isScannerConnected ? "The NFC terminal is online and ready to authenticate wallets!" : "Press the button below to connect your NFC reader"}
             </p>
             {!isScannerConnected ? <div className={"buttons"}>
                     {!loading && !isScannerConnected && (
                         <Button onClick={handleGetWallet}
-                                style={{background: "#ba0023", color: "white", borderRadius: 4}}>DISCONNECTED</Button>
+                                style={{background: "#ba0023", color: "white", borderRadius: 4}}>Connect NFC Reader</Button>
                     )}
                     {loading && (
                         <Button className={"disabledButton"} disabled>
@@ -74,7 +74,7 @@ const RestoreAccount = (props: { socket: any | null }): ReactElement => {
                 </div> :
                 <div className={"buttons"}>
                     <p className={`text-center mb-0 ${styles.connectedText}`}
-                       style={{background: "#097a27", borderRadius: 2}}>Scanner Connected</p>
+                       style={{background: "#097a27", borderRadius: 2}}>NFC Reader ready!</p>
                 </div>
             }
         </Card>

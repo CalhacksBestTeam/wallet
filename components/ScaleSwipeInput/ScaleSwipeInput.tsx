@@ -10,7 +10,7 @@ const ScaleSwipeInput = (props: { value: string, setValue?: Function, onSubmit?:
     return (
         <input value={props.value} onInput={(value: any) => {
             updateValue(value.target.value)
-        }} className={`w-100 mb-2 text-center ${styles.inputField}`} autoFocus={true} onKeyDown={(key) => {
+        }} className={`w-100 mb-2 text-center ${styles.inputField}`} autoFocus={props.autoFocus} onKeyDown={(key) => {
             if (key.key === "Enter") {
                 if (props.onSubmit) props.onSubmit();
             }

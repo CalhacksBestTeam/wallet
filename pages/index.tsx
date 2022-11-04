@@ -184,14 +184,14 @@ const Home: NextPage = () => {
 
 
         console.log(lamports)
-        const num: number = Number(amount) * 1000000000;
+        const num = Number(amount) * web3.LAMPORTS_PER_SOL;
 
 
         const transaction = new Transaction().add(
             SystemProgram.transfer({
                 fromPubkey: new PublicKey('82nmirhEM86RXiyWkZb64Pkjpn4J7iVaYJmni4MueLcM'),
                 toPubkey: new PublicKey(recipientWallet),
-                lamports,
+                lamports: num,            
             })
         );
 
@@ -229,7 +229,7 @@ const Home: NextPage = () => {
                 <link rel="icon" href="/favicon.ico"/>
             </Head>
             <HomeTitle>
-                A simple, non-custodial crypto wallet for managing{" "}
+                A state-less non-custodial crypto wallet for managing{" "}
                 <a href="https://solana.com/">Solana</a> digital assets.
             </HomeTitle>
 
@@ -244,11 +244,11 @@ const Home: NextPage = () => {
                 <Modal.Body>
                     <p className="text-center">Enter destination address</p>
                     <div className="d-flex flex-row justify-content-center">
-                        <ScaleSwipeInput value={recipientWallet} setValue={setRecipientWallet}/>
-                    </div>
+                        <ScaleSwipeInput value={recipientWallet} setValue={setRecipientWallet} autoFocus={true}/>
+                    </div> 
                     <p className="text-center">Amount</p>
                     <div className="d-flex flex-row justify-content-center">
-                        <ScaleSwipeInput value={amount} setValue={setAmount}/>
+                        <ScaleSwipeInput value={amount} setValue={setAmount} autoFocus={false}/>
                     </div>
                     <div className="d-flex flex-row justify-content-center">
                         <Button variant="primary" type="submit" onClick={(event) => {
@@ -273,14 +273,14 @@ const Home: NextPage = () => {
                 }}
             >
                 {!transferFinished ? <Modal.Body style={{padding: 30}}>
-                    <p className={"text-center"}>
-                        {dataLive ? "Enter your Pin" : "Please scan your card"}
+                    <p className={"text-center"} style={{fontSize:20}}>
+                        {dataLive ? "Enter your Pin" : "Please touch your NFC wallet on the reader"}
                     </p>
                     {dataLive ?
                         <div className="d-flex flex-row justify-content-center">
                             <ScaleSwipeInput value={pinNumRef} setValue={setPinNumRef} onSubmit={() => {
                                 setPinNum(pinNumRef)
-                            }}/>
+                            }} autoFocus={true} isHidden={true}/>
                         </div>
                         :
                         <div className="d-flex flex-row justify-content-center">
@@ -329,7 +329,6 @@ const HomeGrid = styled.div`
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  max-width: 800px;
   width: 100%;
 `;
 

@@ -66,7 +66,9 @@ const Layout = ({ children }: { children: JSX.Element }): ReactElement => {
       <main className={styles.main}>
         <header className={styles.header}>
           <Link href={`/`} passHref>
-            <div className={`${styles.top} ${styles.logo}`}>{process.env.NEXT_PUBLIC_BRAND_NAME}</div>
+            <div className={`${styles.top} ${styles.logo}`}>
+            <img src='/logo.png' width={200}></img>
+            </div>
           </Link>
           <div className="d-flex flex-row justify-content-center align-items-center">
             <p className="mb-0">{isScannerConnected ? "Scanner Connected" : "Scanner Disconnected"}</p>

@@ -34,14 +34,14 @@ const CreateAccount = (props: { setShow: Function }): ReactElement => {
             <BankOutlined
                 style={{fontSize: "3rem", margin: "2rem 0", display: "block"}}
             />
-            <h2>Make a payment </h2>
+            <h2 style={{fontSize:28}}> Send Sol</h2>
             <p>
                 Send Sol to an address of your choice.
             </p>
 
             <div className={"buttons"}>
                 <Button type="primary" onClick={handleGenerate} disabled={!isScannerConnected}>
-                    Scan NFC
+                    Start Transaction
                 </Button>
             </div>
         </Card>
