@@ -1,6 +1,6 @@
 export interface IWebsocketMessage {
     source: Source;
-    data?: string;
+    data?: any;
     command: Command;
 }
 
@@ -13,6 +13,8 @@ export enum Source {
 export enum Command {
     Scan="Scan",
     Connect="Connect",
+    SendPublicKey="SendPublicKey",
+    SignAndSendTransaction="SignAndSendTransaction",
     Ping="Ping",
     Disconnect="Disconnect",
 }

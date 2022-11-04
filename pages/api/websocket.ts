@@ -7,7 +7,13 @@ const SocketHandler = (req : any, res : any) => {
         console.log('Socket is already running')
     } else {
         console.log('Socket is initializing')
-        const io = new Server(res.socket.server)
+        const io = new Server(res.socket.server, {
+            cors: {
+                origin: "http://localhost:3000",
+                methods: ["GET", "POST"],
+                allowedHeaders: ["Access-Control-Allow-Origin: *"],
+            }
+        })
 
         io.sockets.on('connection', (socket : any) => {
             socket.join("test")

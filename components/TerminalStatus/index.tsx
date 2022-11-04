@@ -41,6 +41,7 @@ const RestoreAccount = (props: { socket: any | null }): ReactElement => {
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
                 animation={true}
+                onHide={() => setLoading(false)}
             >
                 <p className={`text-center p-2 ${styles.connectText}`}>Please Accept the Connection Request on your
                     Device</p>
