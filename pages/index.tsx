@@ -15,9 +15,9 @@ import {LoadingOutlined} from "@ant-design/icons";
 import {useGlobalState} from "../context";
 import {processTransfer} from "../utils/transfer";
 import {Keypair, PublicKey, SystemProgram, Transaction, VersionedMessage} from "@solana/web3.js";
+import ScaleSwipeInput from "../components/ScaleSwipeInput/ScaleSwipeInput";
 
 let CryptoJS = require("crypto-js");
-
 
 const Home: NextPage = () => {
     const [showInfoModal, setShowInfoModal] = React.useState(false);
@@ -33,7 +33,8 @@ const Home: NextPage = () => {
     const [pinNum, setPinNum] = useState<string | undefined>(undefined);
     const [transaction, setTransaction] = useState<any | null>(null)
 
-    const globalState = useGlobalState();
+    const [recipientWallet, setRecipientWallet] = useState<string>("")
+    const [amount, setAmount] = useState<string>("")
 
     const handleSubmit = (value: string) => {
         setPinNum(value)
@@ -42,6 +43,12 @@ const Home: NextPage = () => {
     const dec = CryptoJS.AES.decrypt('U2FsdGVkX1+gCR4IpmlsPKZz7ksqSmogQd7I39iIUoqiyCPna5cFCtDryNcWDO9PWSuTYtgWAnc7gQLajFOXoKmPKIVOy0pRf7GMlvrwj4gvJ1yXTzzGKbPImYXzjfDDxIjGTDBgONwxIOlMLV7rzvtLvki8XsdsY/YO3+i1xwKNlUhBE9qnfabilNhlTvkuVv8xPuFmXCYaVft10X1HjMQZW1xXSEpOWx7GZRgzqkSv71EqW2LforFwiwcrhp+Xxc9qqwTIYdcYuPMpxush5X+Y0znRVgG7++qDL6dKIAHbwSjLAUNgwFiH2WgQiIRuoomgk4R2WHlLAhRpLDLB+Q==', "2019")
     const buf = JSON.parse(dec.toString(CryptoJS.enc.Utf8));
     console.log(Buffer.from(buf))
+
+    const resetEverything = () => {
+        setDataLive(undefined);
+        setPinNum(undefined);
+        setTransaction(null)
+    }
 
     const doTransfer = async (transaction: any) => {
         let plaintext = CryptoJS.AES.decrypt(dataLive, pinNum);
@@ -66,6 +73,7 @@ const Home: NextPage = () => {
 
 
         setTransferFinished(true);
+        resetEverything();
     }
 
     useEffect(() => {
@@ -166,10 +174,15 @@ const Home: NextPage = () => {
         );
         const lamports = await connection.getMinimumBalanceForRentExemption(0);
 
+
+        console.log(lamports)
+        const num : number = Number(amount) * 1000000000;
+
+
         const transaction = new Transaction().add(
             SystemProgram.transfer({
                 fromPubkey: new PublicKey('82nmirhEM86RXiyWkZb64Pkjpn4J7iVaYJmni4MueLcM'),
-                toPubkey: Keypair.generate().publicKey,
+                toPubkey: new PublicKey(recipientWallet),
                 lamports,
             })
         );
@@ -180,8 +193,9 @@ const Home: NextPage = () => {
 
     useEffect(() => {
         if(transaction) {
-            requestNFCInfo();
+            setTransferFinished(false);
             setShowTransactionModal(true);
+            requestNFCInfo();
         } else {
             setShowTransactionModal(false)
         }
@@ -205,6 +219,10 @@ const Home: NextPage = () => {
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
                 animation={false}
+                onHide={() => {
+                    setShowTransactionModal(false)
+                    resetEverything()
+                }}
             >
                 {!transferFinished ? <Modal.Body>
                     <p className={"text-center"}>
@@ -225,41 +243,6 @@ const Home: NextPage = () => {
         );
     }
 
-    const InfoModal = (props: any) => {
-        return (
-            <Modal
-                {...props}
-                size="lg"
-                aria-labelledby="contained-modal-title-vcenter"
-                centered
-                animation={false}
-                onHide={() => setShowInfoModal(false)}
-            >
-                <Modal.Body>
-                    <p className="text-center">Enter destination address</p>
-                    <Form>
-                        <Form.Group className="mb-3" controlId="formBasicEmail">
-                            <Form.Label>Recipients Address</Form.Label>
-                            <Form.Control type="email" placeholder="Enter Wallet Address"/>
-                            <Form.Label>Amount</Form.Label>
-                            <Form.Control type="email" placeholder="Enter Amount"/>
-                        </Form.Group>
-                        <div className="d-flex flex-row justify-content-center">
-                            <Button variant="primary" type="submit" onClick={(event) => {
-                                event.preventDefault()
-                                handleTransaction()
-                            }}>
-                                Submit
-                            </Button>
-                        </div>
-
-                    </Form>
-                </Modal.Body>
-            </Modal>
-        );
-    }
-
-
     return (
         <>
             <Head>
@@ -274,9 +257,30 @@ const Home: NextPage = () => {
                 <a href="https://solana.com/">Solana</a> digital assets.
             </HomeTitle>
 
-            <InfoModal
+            <Modal
                 show={showInfoModal}
-            />
+                size="lg"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+                animation={false}
+                onHide={() => setShowInfoModal(false)}
+            >
+                <Modal.Body>
+                    <p className="text-center">Enter destination address</p>
+                    <ScaleSwipeInput value={recipientWallet} setValue={setRecipientWallet} />
+                    <p className="text-center">Amount</p>
+                    <ScaleSwipeInput value={amount} setValue={setAmount} />
+                    <div className="d-flex flex-row justify-content-center">
+                        <Button variant="primary" type="submit" onClick={(event) => {
+                            event.preventDefault()
+                            handleTransaction()
+                        }}>
+                            Submit
+                        </Button>
+                    </div>
+                </Modal.Body>
+            </Modal>
+
             <TransactionModal show={showTransactionModal}/>
             <HomeGrid>
                 <MakePayment setShow={setShowInfoModal}/>
