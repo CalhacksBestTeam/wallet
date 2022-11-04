@@ -28,7 +28,7 @@ const RestoreAccount = (): ReactElement => {
       <div className={"buttons"}>
         {!loading && (
           <Link href={`/recover`} passHref>
-            <Button onClick={handleGetWallet}>Connect NFC</Button>
+            <Button onClick={handleGetWallet}>Start Transaction</Button>
           </Link>
         )}
         {loading && (

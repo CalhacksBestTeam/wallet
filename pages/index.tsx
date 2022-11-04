@@ -163,6 +163,7 @@ const Home: NextPage = () => {
                 socket.off('connect');
                 socket.off('disconnect');
                 socket.off('pong');
+                socket.off('message');
             };
         })
     }, [dispatch]);
