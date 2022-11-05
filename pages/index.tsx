@@ -229,8 +229,7 @@ const Home: NextPage = () => {
                 <link rel="icon" href="/favicon.ico"/>
             </Head>
             <HomeTitle>
-                A state-less non-custodial crypto wallet for managing{" "}
-                <a href="https://solana.com/">Solana</a> digital assets.
+                A stateless non-custodial crypto wallet making digital assets portable.
             </HomeTitle>
 
             <Modal
