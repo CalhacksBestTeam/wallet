@@ -249,7 +249,7 @@ const Home: NextPage = () => {
                     <div className="d-flex flex-row justify-content-center">
                         <ScaleSwipeInput value={amount} setValue={setAmount} autoFocus={false}/>
                     </div>
-                    <div className="d-flex flex-row justify-content-center">
+                    <div className="d-flex flex-row justify-content-center" >
                         <Button variant="primary" type="submit" onClick={(event) => {
                             event.preventDefault()
                             handleTransaction()
