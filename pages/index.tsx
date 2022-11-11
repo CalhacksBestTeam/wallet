@@ -7,7 +7,7 @@ import styled from "styled-components";
 import {Button, Modal} from "react-bootstrap";
 import {useRouter} from "next/router";
 import io from 'socket.io-client';
-import {Command, IWebsocketMessage, Source} from "../config/Types";
+import {Command, IWebsocketMessage, Source, Target} from "../config/Types";
 import {useDispatch} from "react-redux";
 import {setConnected, setDisconnected} from "../store/features/connectedSlice";
 import {LoadingOutlined} from "@ant-design/icons";
@@ -49,6 +49,7 @@ const Home: NextPage = () => {
         setPinNum(undefined);
         setTransaction(null);
         setTransactionID(undefined);
+        setPinNumRef("");
     }
 
     const doTransfer = async (transaction: any) => {
@@ -123,7 +124,7 @@ const Home: NextPage = () => {
                         dispatch(setConnected())
                     } else if (data.command === Command.Disconnect) {
                         dispatch(setDisconnected())
-                    } else if (data.command === Command.Scan && data.data) {
+                    } else if (data.command === Command.Scan && data.data && data.target === Target.Wallet) {
                         console.log("RECIEVED SCAN DATA", data)
                         setDataLive(data.data)
                     }
@@ -191,7 +192,7 @@ const Home: NextPage = () => {
             SystemProgram.transfer({
                 fromPubkey: new PublicKey('82nmirhEM86RXiyWkZb64Pkjpn4J7iVaYJmni4MueLcM'),
                 toPubkey: new PublicKey(recipientWallet),
-                lamports: num,            
+                lamports: num,
             })
         );
 
@@ -213,7 +214,8 @@ const Home: NextPage = () => {
         if (!socket) return;
         const message: IWebsocketMessage = {
             source: Source.Wallet,
-            command: Command.Scan
+            command: Command.Scan,
+            target: Target.Wallet
         }
 
         socket.emit('message', message);
@@ -244,7 +246,7 @@ const Home: NextPage = () => {
                     <p className="text-center">Enter destination address</p>
                     <div className="d-flex flex-row justify-content-center">
                         <ScaleSwipeInput value={recipientWallet} setValue={setRecipientWallet} autoFocus={true}/>
-                    </div> 
+                    </div>
                     <p className="text-center">Amount</p>
                     <div className="d-flex flex-row justify-content-center">
                         <ScaleSwipeInput value={amount} setValue={setAmount} autoFocus={false}/>
